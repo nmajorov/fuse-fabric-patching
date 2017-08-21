@@ -1,0 +1,56 @@
+---
+
+- name:  install yum packages
+  yum:
+   name: "{{ item }}"
+   state: present
+  with_items:
+   - zip
+   - unzip
+   - net-tools
+   - telnet # need it for fabric
+   - java-1.8.0-openjdk-devel
+
+
+
+- name: add fuse group
+  group: 
+    name='{{ fuse_group }}'
+    state=present
+
+- name: add fuse user
+  user: 
+    name='{{ fuse_user }}'
+    group='{{ fuse_group }}'
+    home='{{ fuse_user_home }}'
+    #password='$6$yVUfmnFYh1ZgTt2w$03OSwrnFUVYv49Y.VEWUre.ElhxHIWl37qtFAsd7T/FVeAOmyynGgYROxM5U29zEpWYoNDaaYUuIHZr0GOo5E0'
+
+- name: set fuse user password
+  shell: echo {{ fuse_user_pass }} | passwd --stdin {{ fuse_user }} 
+
+- name: "Create .bashrc file for the fuse user"
+  template:
+    owner: "{{ fuse_user }}"
+    group: "{{ fuse_group }}"
+    src: .bashrc.j2
+    dest: "{{ fuse_user_home }}/.bashrc"
+    mode: "0644"
+  
+- name: fix hosts name resolutions
+  script: files/fix_hosts.py
+
+- name: allow ssh connect with passwd
+  lineinfile: 
+    dest='/etc/ssh/sshd_config'
+    insertafter='^#PasswordAuthentication yes'
+    line='PasswordAuthentication yes'
+    state=present
+ 
+- name: remove  sshd  PasswordAuthentication no
+  lineinfile: 
+    dest='/etc/ssh/sshd_config'
+    line='PasswordAuthentication no'
+    state=absent
+  notify: sshd restart
+
+ 

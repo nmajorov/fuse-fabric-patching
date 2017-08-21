@@ -1,0 +1,18 @@
+---
+
+- hosts: FUSE
+  gather_facts: yes
+  become: true
+  roles:
+    - common
+  
+
+- hosts: masters
+  become: true
+  roles:
+    - fuse
+
+- hosts: masters
+  become: true
+  roles:
+    - fabric

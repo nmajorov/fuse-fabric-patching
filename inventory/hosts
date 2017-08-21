@@ -1,0 +1,17 @@
+[FUSE:children]
+masters
+nodes
+
+
+[masters]
+fuse-server ansible_host=10.42.0.2  ansible_ssh_user=vagrant  ansible_ssh_private_key_file=.vagrant/machines/fuse-server/virtualbox/private_key
+
+[nodes]
+node1  ansible_host=10.42.0.3 ansible_ssh_user=vagrant ansible_ssh_private_key_file=.vagrant/machines/node1/virtualbox/private_key  
+node2  ansible_host=10.42.0.4 ansible_ssh_user=vagrant ansible_ssh_private_key_file=.vagrant/machines/node2/virtualbox/private_key
+
+
+#[fabric]
+#10.3.10.128 ansible_ssh_user=cloud-user ansible_ssh_private_key_file=~/.ssh/id_rsa
+#10.3.12.73  ansible_ssh_user=cloud-user ansible_ssh_private_key_file=~/.ssh/id_rsa
+#10.3.12.74  ansible_ssh_user=cloud-user ansible_ssh_private_key_file=~/.ssh/id_rsa

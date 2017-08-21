@@ -1,0 +1,65 @@
+---
+- name: patch to fabric
+  hosts: all
+  become: true
+  vars_files: 
+    - group_vars/all
+  
+  tasks:
+
+    
+  - name: copy fuse patch management archive
+    copy: src="{{fuse_patch_managment_archive}}" dest="{{fuse_user_home}}"
+
+  - name: copy the fuse patch archive
+    copy: src="{{ fuse_patch_archive }}" dest="{{ fuse_user_home }}/R7.zip"
+
+
+  - name: remove exception lib
+    file:
+      path: "{{ fuse_path }}/lib/endorsed/org.apache.karaf.exception-2.4.0.redhat-621084.jar"
+      state: absent
+    
+  - name: unzip patch management over fuse installation
+    shell: "cd {{ fuse_user_home }} && unzip {{ fuse_patch_managment_archive }} -d {{ fuse_path }}"
+    become_user: '{{ fuse_user }}'
+    become_flags: '-i' 
+
+ 
+
+- name: apply patch to root container
+  hosts: masters
+  tasks: 
+
+
+    - name: copy fabric file
+      copy: src="patch_fabric.txt" dest="{{ fuse_user_home }}/patch_fabric.txt"
+
+    - name: appy changes to profile
+      shell: "cd {{ fuse_user_home }} && ./client shell:source {{ fuse_user_home }}/patch_fabric.txt"
+      become_user: '{{ fuse_user }}'
+      become_flags: '-i' 
+
+    - name: add patch to the instance
+      command: "{{ fuse_client_invocation}} 'patch:add file:///R7.zip'"
+      become_user: '{{ fuse_user }}'
+      become_flags: '-i' 
+    
+    - name: insert extra properties for R7 patch
+      lineinfile: 
+          dest="{{fuse_path}}/bin/setenv"
+          insertafter='^export JAVA_MAX_PERM_MEM'
+          line='EXTRA_JAVA_OPTS="-Daether.updateCheckManager.sessionState=bypass"'
+          state=present
+      # to do add extra options for remote ssh containers
+
+    # TODO add steps
+    # for root:
+    # fabric:version-create 1.1
+    #patch:fabric-install --username Username --password Password --upload --version 1.1 PatchID
+    # patch:fabric-synchronize
+    # fabric:container-upgrade 1.1 remote
+    # fabric:container-upgrade 1.1 root
+
+   # - name: make sure to restart the service
+    #  service: name=fuse state=restarted

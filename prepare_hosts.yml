@@ -1,0 +1,30 @@
+# optional and for old box version of CentOS
+# virtual new  box is usuall up-to date
+# prepare hosts for fabric
+# enable host resutions and update yum
+#
+---
+
+- hosts: fuse
+  become: yes
+
+  tasks:
+
+  - name: run update for hosts
+    yum: name=* state=latest
+
+  - name: Restart systems
+    shell: sleep 2 && shutdown -r now "fuse ansible restart"
+    async: 1
+    poll: 0
+    ignore_errors: true
+    become: yes
+   
+  - name: Wait for server to restart
+    local_action:
+      module: wait_for
+        port=22
+        host="{{ ansible_host }}"
+        delay=10
+    become: no
+

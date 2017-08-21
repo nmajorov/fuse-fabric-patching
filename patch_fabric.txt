@@ -1,0 +1,6 @@
+profile-edit --pid io.fabric8.version/patch=1.2.0.redhat-621186 default 1.0
+profile-edit --pid 'io.fabric8.agent/repository.fabric8-patch=mvn:io.fabric8.patch/patch-features/${version:patch}/xml/features' default 1.0
+
+profile-edit --delete --feature patch-core default
+profile-edit --feature patch default
+profile-edit --feature patch-core default
