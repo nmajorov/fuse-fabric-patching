@@ -1,13 +1,13 @@
 # Patching POC for  Fuse fabric 6.2.1
 
-download and copy in current directory file:
+download and copy in current directory fllowing files:
 
         jboss-fuse-full-6.2.1.redhat-084.zip
         jboss-fuse-full-6.2.1.redhat-186.zip    
         patch-management-for-fuse-620-6.2.1.redhat-186.zip
 
 
-Intallation instuctions
+## Intallation instuctions
 
 * intall vagrant and run command:
 
